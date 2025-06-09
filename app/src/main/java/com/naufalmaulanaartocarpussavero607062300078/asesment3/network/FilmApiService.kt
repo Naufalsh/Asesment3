@@ -29,6 +29,9 @@ private val retrofit = Retrofit.Builder()
 
 interface FilmApiService {
     @GET("reviews")
+    suspend fun getAllReviewFilm(@Header("Authorization") userId: String): List<ReviewFilm>
+
+    @GET("reviews")
     suspend fun getReviewFilm(
         @Header("Authorization") userId: String
     ): List<ReviewFilm>

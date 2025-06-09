@@ -1,5 +1,6 @@
 package com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.screen
 
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -25,9 +26,12 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.FilmDialog
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.R
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.theme.Asesment3Theme
 
 @Composable
 fun EditFilmDialog(
@@ -117,5 +121,21 @@ fun EditFilmDialog(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun FilmEditDialogPreview() {
+    Asesment3Theme {
+        EditFilmDialog(
+            bitmap = null,
+            currentJudul = "Contoh Judul",
+            currentRating = "4.5",
+            currentKomentar = "Film ini sangat bagus dan menghibur!",
+            onDismissRequest = {},
+            onConfirmation = { _, _, _ -> }
+        )
     }
 }

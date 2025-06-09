@@ -18,7 +18,7 @@ fun SetupNavGraph(navController: NavHostController = rememberNavController()) {
             HomeScreen(navController)
         }
         composable(route = Screen.myFilm.route) {
-            MainScreen()
+            MainScreen(navController)
         }
     }
 }

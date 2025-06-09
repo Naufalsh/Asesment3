@@ -25,6 +25,21 @@ class MainViewModel : ViewModel() {
     var errorMessage = mutableStateOf<String?>(null)
         private set
 
+    fun retrieveAllData(userId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            status.value = ApiStatus.LOADING
+            try {
+                val result = FilmApi.service.getAllReviewFilm(userId)
+                data.value = result
+                status.value = ApiStatus.SUCCESS
+            } catch (e: Exception) {
+                Log.d("MainViewModel", "Failure: ${e.message}")
+                status.value = ApiStatus.FAILED
+            }
+        }
+    }
+
+
     fun retrieveData(userId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             status.value = ApiStatus.LOADING
@@ -64,13 +79,13 @@ class MainViewModel : ViewModel() {
 
     }
 
-    fun deleteData(userId: String, hewanId: String) {
-        Log.d("Delete", "delete Data: UserId= $userId, hewanId= $hewanId")
+    fun deleteData(userId: String, filmId: String) {
+        Log.d("Delete", "delete Data: UserId= $userId, filmId= $filmId")
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val result = FilmApi.service.deleteFilm(
                     userId = userId,
-                    id = hewanId
+                    id = filmId
                 )
 
                 if (result.status == "success") {

@@ -1,25 +1,34 @@
 package com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.screen
 
 import android.content.Context
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -40,6 +49,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.credentials.ClearCredentialStateRequest
@@ -50,7 +61,9 @@ import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.ClearCredentialException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -59,19 +72,23 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingExcept
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.ApiStatus
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.BuildConfig
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.FilmApi
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.MainScreen
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.MainViewModel
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.ProfilDialog
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.R
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.UserDataStore
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.ReviewFilm
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.User
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.navigation.Screen
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.component.BottomNavItem
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.theme.Asesment3Theme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavHostController) {
     val context = LocalContext.current
     val dataStore = UserDataStore(context)
     val user by dataStore.userFlow.collectAsState(User())
@@ -109,6 +126,9 @@ fun HomeScreen(navController: NavController) {
                     }
                 }
             )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController)
         }
     ) { innerPadding ->
         ScreenContent(viewModel,user.email, Modifier.padding(innerPadding))
@@ -130,7 +150,7 @@ fun ScreenContent(viewModel: MainViewModel, userId: String ,modifier: Modifier =
     val status by viewModel.status.collectAsState()
 
     LaunchedEffect(userId) {
-        viewModel.retrieveData(userId)
+        viewModel.retrieveAllData(userId)
     }
 
     when (status) {
@@ -171,6 +191,52 @@ fun ScreenContent(viewModel: MainViewModel, userId: String ,modifier: Modifier =
         }
 
 
+    }
+}
+
+@Composable
+fun BottomNavigationBar(navController: NavHostController) {
+    val items = listOf(
+        BottomNavItem.DrawableIconItem(
+            navName = "List Film",
+            navRoute = Screen.Home.route,
+            iconResId = R.drawable.loading_img
+        ),
+        BottomNavItem.DrawableIconItem(
+            navName = "Film Saya",
+            navRoute = Screen.myFilm.route,
+            iconResId = R.drawable.loading_img
+        )
+    )
+
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = Color.White
+    ) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        items.forEach { item ->
+            NavigationBarItem(
+                icon = { item.Icon(isSelected = currentRoute == item.route) },
+                label = { Text(item.name) },
+                selected = currentRoute == item.route,
+                onClick = {
+                    if (currentRoute != item.route) {
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.secondary,
+                    selectedTextColor = MaterialTheme.colorScheme.secondary,
+                    unselectedIconColor = MaterialTheme.colorScheme.primary,
+                    unselectedTextColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
     }
 }
 
@@ -226,41 +292,87 @@ private suspend fun signOut(context: Context, dataStore: UserDataStore) {
 
 @Composable
 fun ListItem(reviewFilm: ReviewFilm) {
-    Box(
-        modifier = Modifier.padding(4.dp).border(1.dp, Color.Gray),
-        contentAlignment = Alignment.BottomCenter
+    var expanded by remember { mutableStateOf(false) }
+    val showReadMore = reviewFilm.komentar.length > 120
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(
-                    FilmApi.getFilmUrl(reviewFilm.poster_path))
-                .crossfade(true)
-                .build(),
-            contentDescription = stringResource(R.string.gambar, reviewFilm.judul_film),
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(id = R.drawable.loading_img),
-            error = painterResource(id = R.drawable.baseline_broken_image_24),
-            modifier = Modifier.fillMaxWidth().padding(4.dp)
-        )
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(4.dp)
-                .background(Color(red = 0f, green = 0f, blue = 0f, alpha = 0.5f))
-                .padding(4.dp)
-        ) {
-            Text(text = reviewFilm.judul_film,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+        Column {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(FilmApi.getFilmUrl(reviewFilm.poster_path))
+                    .crossfade(true)
+                    .build(),
+                contentDescription = stringResource(R.string.gambar, reviewFilm.judul_film),
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = R.drawable.loading_img),
+                error = painterResource(id = R.drawable.baseline_broken_image_24),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
             )
-            Text(text = reviewFilm.rating,
-                fontStyle = FontStyle.Italic,
-                fontSize = 14.sp,
-                color = Color.White
-            )
-            Text(text = reviewFilm.komentar,
-                fontStyle = FontStyle.Italic,
-                fontSize = 14.sp,
-                color = Color.White
-            )
+
+            Column(modifier = Modifier.background(Color.Black.copy(0.6f)).padding(16.dp)) {
+                Text(
+                    text = reviewFilm.judul_film,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "${reviewFilm.rating}/5",
+                    fontStyle = FontStyle.Italic,
+                    fontSize = 14.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Box {
+                    Text(
+                        text = reviewFilm.komentar,
+                        fontSize = 14.sp,
+                        maxLines = if (expanded) Int.MAX_VALUE else 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    // Reserve space for "Read more"
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)) {
+                    if (showReadMore) {
+                        Text(
+                            text = if (expanded) "Show less" else "Read more",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 13.sp,
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .clickable { expanded = !expanded }
+                        )
+                    }
+                }
+            }
         }
+    }
+}
+
+
+
+
+
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    Asesment3Theme {
+        HomeScreen(rememberNavController())
     }
 }
