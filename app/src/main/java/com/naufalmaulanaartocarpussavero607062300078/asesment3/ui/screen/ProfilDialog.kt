@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.R
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.User
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.theme.Asesment3Theme
 

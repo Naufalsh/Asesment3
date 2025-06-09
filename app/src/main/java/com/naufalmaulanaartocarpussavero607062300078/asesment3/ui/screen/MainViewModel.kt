@@ -29,7 +29,7 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             status.value = ApiStatus.LOADING
             try {
-                data.value = HewanApi.service.getReviewFilm(userId)
+                data.value = FilmApi.service.getReviewFilm(userId)
                 status.value = ApiStatus.SUCCESS
             } catch (e: Exception) {
                 Log.d("MainViewModel", "Failure: ${e.message}")
@@ -42,7 +42,7 @@ class MainViewModel : ViewModel() {
         Log.d("DEBUG", "saveData: UserId= $userId, judul_film= $judul_film, rating= $rating, komentar= $komentar")
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val result = HewanApi.service.postReviewFilm(
+                val result = FilmApi.service.postReviewFilm(
                     userId,
                     judul_film.toRequestBody("text/plain".toMediaTypeOrNull()),
                     rating.toRequestBody("text/plain".toMediaTypeOrNull()),
@@ -68,7 +68,7 @@ class MainViewModel : ViewModel() {
         Log.d("Delete", "delete Data: UserId= $userId, hewanId= $hewanId")
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val result = HewanApi.service.deleteHewan(
+                val result = FilmApi.service.deleteFilm(
                     userId = userId,
                     id = hewanId
                 )

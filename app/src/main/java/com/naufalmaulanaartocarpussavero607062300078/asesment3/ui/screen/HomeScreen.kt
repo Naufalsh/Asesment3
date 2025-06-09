@@ -1,39 +1,22 @@
-package com.naufalmaulanaartocarpussavero607062300078.asesment3
+package com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.screen
 
-import android.content.ContentResolver
 import android.content.Context
-import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -57,7 +40,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.credentials.ClearCredentialStateRequest
@@ -68,42 +50,34 @@ import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.ClearCredentialException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.canhub.cropper.CropImageContract
-import com.canhub.cropper.CropImageContractOptions
-import com.canhub.cropper.CropImageOptions
-import com.canhub.cropper.CropImageView
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.ApiStatus
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.BuildConfig
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.FilmApi
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.MainViewModel
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.ProfilDialog
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.R
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.UserDataStore
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.ReviewFilm
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.User
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.theme.Asesment3Theme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun HomeScreen(navController: NavController) {
     val context = LocalContext.current
     val dataStore = UserDataStore(context)
     val user by dataStore.userFlow.collectAsState(User())
 
-    val viewModel: MainViewModel = viewModel()
-    val errorMessage by viewModel.errorMessage
-
     var showDialog by remember { mutableStateOf(false) }
-    var showFilmDialog by remember { mutableStateOf(false) }
-
-    var bitmap: Bitmap? by remember { mutableStateOf(null) }
-    val launcher = rememberLauncherForActivityResult(CropImageContract()) {
-        bitmap = getCroppedImage(context.contentResolver, it)
-        if (bitmap != null) showFilmDialog = true
-    }
-
-    var filmToEdit by remember { mutableStateOf<ReviewFilm?>(null) }
+    val viewModel: MainViewModel = viewModel()
 
     Scaffold(
         topBar = {
@@ -135,23 +109,6 @@ fun MainScreen() {
                     }
                 }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                val options = CropImageContractOptions(
-                    null, CropImageOptions(
-                        imageSourceIncludeGallery = true,
-                        imageSourceIncludeCamera = true,
-                        fixAspectRatio = true
-                    )
-                )
-                launcher.launch(options)
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.tambah_hewan)
-                )
-            }
         }
     ) { innerPadding ->
         ScreenContent(viewModel,user.email, Modifier.padding(innerPadding))
@@ -163,19 +120,6 @@ fun MainScreen() {
                 CoroutineScope(Dispatchers.IO).launch { signOut(context, dataStore) }
                 showDialog = false
             }
-        }
-
-        if (showFilmDialog) {
-            FilmDialog(
-                bitmap = bitmap,
-                onDismissRequest = { showFilmDialog = false }) { judul_film, rating, komentar -> viewModel.saveData(user.email, judul_film, rating,komentar, bitmap!!)
-                showFilmDialog = false
-                }
-        }
-
-        if (errorMessage != null) {
-            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
-            viewModel.clearMessage()
         }
     }
 }
@@ -205,7 +149,7 @@ fun ScreenContent(viewModel: MainViewModel, userId: String ,modifier: Modifier =
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                items(data) { ListItem(reviewFilm = it, userId = userId, onDelete = { id -> viewModel.deleteData(userId, id)}) }
+                items(data) { ListItem(reviewFilm = it) }
             }
         }
 
@@ -229,6 +173,7 @@ fun ScreenContent(viewModel: MainViewModel, userId: String ,modifier: Modifier =
 
     }
 }
+
 
 private suspend fun signIn(context: Context, dataStore: UserDataStore) {
     val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
@@ -279,33 +224,8 @@ private suspend fun signOut(context: Context, dataStore: UserDataStore) {
     }
 }
 
-private fun getCroppedImage(
-    resolver: ContentResolver,
-    result: CropImageView.CropResult
-) : Bitmap? {
-    if (!result.isSuccessful) {
-        Log.e("IMAGE", "Error: ${result.error}")
-        return null
-    }
-
-    val uri = result.uriContent ?: return null
-
-    return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-        MediaStore.Images.Media.getBitmap(resolver, uri)
-    } else {
-        val source = ImageDecoder.createSource(resolver, uri)
-        ImageDecoder.decodeBitmap(source)
-    }
-}
-
-
 @Composable
-fun ListItem(reviewFilm: ReviewFilm, userId: String, onDelete: (String) -> Unit) {
-    Log.d("DEBUG", "ListItem - FilmId=${reviewFilm.id}, mine?=${reviewFilm.mine}, currentUserId=$userId")
-
-    var showDialog by remember { mutableStateOf(false) }
-
-
+fun ListItem(reviewFilm: ReviewFilm) {
     Box(
         modifier = Modifier.padding(4.dp).border(1.dp, Color.Gray),
         contentAlignment = Alignment.BottomCenter
@@ -342,69 +262,5 @@ fun ListItem(reviewFilm: ReviewFilm, userId: String, onDelete: (String) -> Unit)
                 color = Color.White
             )
         }
-
-        if (reviewFilm.mine == 1) {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp)
-                    .background(Color(0f, 0f, 0f, 0.5f), shape = RoundedCornerShape(50))
-                    .padding(horizontal = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { /* fungsi edit */ },
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit Film",
-                        tint = Color.White
-                    )
-                }
-
-                IconButton(
-                    onClick = { showDialog = true },
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Hapus Film",
-                        tint = Color.White
-                    )
-                }
-            }
-        }
-
-    }
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text(text = "Konfirmasi Hapus") },
-            text = { Text(text = "Apakah Anda yakin ingin menghapus film ini?") },
-            confirmButton = {
-                Button(onClick = {
-                    showDialog = false
-                    onDelete(reviewFilm.id)
-                }) {
-                    Text(text = "Ya")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { showDialog = false }) {
-                    Text(text = "Tidak")
-                }
-            }
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    Asesment3Theme {
-        MainScreen()
     }
 }

@@ -1,6 +1,5 @@
-package com.naufalmaulanaartocarpussavero607062300078.asesment3
+package com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.screen
 
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -26,36 +25,42 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.R
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.theme.Asesment3Theme
 
 @Composable
-fun HewanDialog(
+fun EditFilmDialog(
     bitmap: Bitmap?,
+    currentJudul: String,
+    currentRating: String,
+    currentKomentar: String,
     onDismissRequest: () -> Unit,
     onConfirmation: (String, String, String) -> Unit
 ) {
-    var judul_film by remember { mutableStateOf("") }
-    var rating by remember { mutableStateOf("") }
-    var komentar by remember { mutableStateOf("") }
+    var judul_film by remember { mutableStateOf(currentJudul) }
+    var rating by remember { mutableStateOf(currentRating) }
+    var komentar by remember { mutableStateOf(currentKomentar) }
 
     Dialog(onDismissRequest = { onDismissRequest() }) {
-        Card (
+        Card(
             modifier = Modifier.padding(16.dp),
             shape = RoundedCornerShape(16.dp)
-        ){
+        ) {
             Column(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    bitmap = bitmap!!.asImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f)
-                )
+                bitmap?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                    )
+                }
+
                 OutlinedTextField(
                     value = judul_film,
                     onValueChange = { judul_film = it },
@@ -73,8 +78,8 @@ fun HewanDialog(
                     label = { Text(text = stringResource(id = R.string.nama_latin)) },
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences,
-                        imeAction = ImeAction.Done
+                        capitalization = KeyboardCapitalization.None,
+                        imeAction = ImeAction.Next
                     ),
                     modifier = Modifier.padding(top = 8.dp)
                 )
@@ -82,7 +87,7 @@ fun HewanDialog(
                     value = komentar,
                     onValueChange = { komentar = it },
                     label = { Text(text = stringResource(id = R.string.nama_latin)) },
-                    maxLines = 1,
+                    maxLines = 3,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences,
                         imeAction = ImeAction.Done
@@ -90,7 +95,9 @@ fun HewanDialog(
                     modifier = Modifier.padding(top = 8.dp)
                 )
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     OutlinedButton(
@@ -100,7 +107,9 @@ fun HewanDialog(
                         Text(text = stringResource(id = R.string.batal))
                     }
                     OutlinedButton(
-                        onClick = { onConfirmation(judul_film, rating, komentar) },
+                        onClick = {
+                            onConfirmation(judul_film, rating, komentar)
+                        },
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text(text = stringResource(R.string.simpan))
@@ -108,18 +117,5 @@ fun HewanDialog(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun AddDialogPreview() {
-    Asesment3Theme {
-        HewanDialog(
-            bitmap = null,
-            onDismissRequest = {},
-            onConfirmation = { _, _, _ -> }
-        )
     }
 }

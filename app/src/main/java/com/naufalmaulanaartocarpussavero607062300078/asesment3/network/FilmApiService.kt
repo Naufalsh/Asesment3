@@ -15,7 +15,6 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 private const val BASE_URL = "https://hip-keen-cub.ngrok-free.app/api/"
 
@@ -28,7 +27,7 @@ private val retrofit = Retrofit.Builder()
     .baseUrl(BASE_URL)
     .build()
 
-interface HewanApiService {
+interface FilmApiService {
     @GET("reviews")
     suspend fun getReviewFilm(
         @Header("Authorization") userId: String
@@ -46,18 +45,18 @@ interface HewanApiService {
         ): OpStatus
 
     @DELETE("reviews/delete/{id}")
-    suspend fun deleteHewan(
+    suspend fun deleteFilm(
         @Header("Authorization") userId: String,
         @Path("id") id: String
     ):OpStatus
 }
 
-object HewanApi {
-    val service: HewanApiService by lazy {
-        retrofit.create(HewanApiService::class.java)
+object FilmApi {
+    val service: FilmApiService by lazy {
+        retrofit.create(FilmApiService::class.java)
     }
 
-    fun getHewanUrl(imageId: String): String {
+    fun getFilmUrl(imageId: String): String {
         return "https://hip-keen-cub.ngrok-free.app/storage/$imageId"
     }
 }
