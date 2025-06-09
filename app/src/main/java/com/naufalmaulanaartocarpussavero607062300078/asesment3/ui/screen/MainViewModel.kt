@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.Hewan
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.ReviewFilm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -16,7 +16,7 @@ import java.io.ByteArrayOutputStream
 
 class MainViewModel : ViewModel() {
 
-    var data = mutableStateOf(emptyList<Hewan>())
+    var data = mutableStateOf(emptyList<ReviewFilm>())
         private set
 
     var status = MutableStateFlow(ApiStatus.LOADING)
@@ -29,7 +29,7 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             status.value = ApiStatus.LOADING
             try {
-                data.value = HewanApi.service.getHewan(userId)
+                data.value = HewanApi.service.getReviewFilm(userId)
                 status.value = ApiStatus.SUCCESS
             } catch (e: Exception) {
                 Log.d("MainViewModel", "Failure: ${e.message}")

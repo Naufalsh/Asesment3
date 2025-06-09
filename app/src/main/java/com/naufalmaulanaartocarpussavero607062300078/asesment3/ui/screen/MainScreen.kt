@@ -74,7 +74,7 @@ import com.canhub.cropper.CropImageView
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.Hewan
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.ReviewFilm
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.User
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.theme.Asesment3Theme
 import kotlinx.coroutines.CoroutineScope
@@ -200,7 +200,7 @@ fun ScreenContent(viewModel: MainViewModel, userId: String ,modifier: Modifier =
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                items(data) { ListItem(hewan = it, userId = userId, onDelete = {id -> viewModel.deleteData(userId, id)}) }
+                items(data) { ListItem(reviewFilm = it, userId = userId, onDelete = { id -> viewModel.deleteData(userId, id)}) }
             }
         }
 
@@ -295,8 +295,8 @@ private fun getCroppedImage(
 
 
 @Composable
-fun ListItem(hewan: Hewan, userId: String, onDelete: (String) -> Unit) {
-    Log.d("DEBUG", "ListItem - HewanId=${hewan.id}, mine?=${hewan.mine}, currentUserId=$userId")
+fun ListItem(reviewFilm: ReviewFilm, userId: String, onDelete: (String) -> Unit) {
+    Log.d("DEBUG", "ListItem - HewanId=${reviewFilm.id}, mine?=${reviewFilm.mine}, currentUserId=$userId")
 
     var showDialog by remember { mutableStateOf(false) }
 
@@ -308,10 +308,10 @@ fun ListItem(hewan: Hewan, userId: String, onDelete: (String) -> Unit) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(
-                    HewanApi.getHewanUrl(hewan.imageId))
+                    HewanApi.getHewanUrl(reviewFilm.poster_path))
                 .crossfade(true)
                 .build(),
-            contentDescription = stringResource(R.string.gambar, hewan.nama),
+            contentDescription = stringResource(R.string.gambar, reviewFilm.judul_film),
             contentScale = ContentScale.Crop,
             placeholder = painterResource(id = R.drawable.loading_img),
             error = painterResource(id = R.drawable.baseline_broken_image_24),
@@ -322,18 +322,23 @@ fun ListItem(hewan: Hewan, userId: String, onDelete: (String) -> Unit) {
                 .background(Color(red = 0f, green = 0f, blue = 0f, alpha = 0.5f))
                 .padding(4.dp)
         ) {
-            Text(text = hewan.nama,
+            Text(text = reviewFilm.judul_film,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
-            Text(text = hewan.namaLatin,
+            Text(text = reviewFilm.rating,
+                fontStyle = FontStyle.Italic,
+                fontSize = 14.sp,
+                color = Color.White
+            )
+            Text(text = reviewFilm.komentar,
                 fontStyle = FontStyle.Italic,
                 fontSize = 14.sp,
                 color = Color.White
             )
         }
 
-        if (hewan.mine == 1) {
+        if (reviewFilm.mine == 1) {
             IconButton(
                 onClick = { showDialog = true },
                 modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp).background(Color(0f,0f,0f,0.5f), shape = CircleShape)
@@ -355,7 +360,7 @@ fun ListItem(hewan: Hewan, userId: String, onDelete: (String) -> Unit) {
             confirmButton = {
                 Button(onClick = {
                     showDialog = false
-                    onDelete(hewan.id)
+                    onDelete(reviewFilm.id)
                 }) {
                     Text(text = "Ya")
                 }

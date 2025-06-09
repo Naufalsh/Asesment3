@@ -1,6 +1,6 @@
 package com.naufalmaulanaartocarpussavero607062300078.asesment3
 
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.Hewan
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.ReviewFilm
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.OpStatus
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -16,7 +16,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Query
 
-private const val BASE_URL = "https://gh.d3ifcool.org/"
+private const val BASE_URL = "https://hip-keen-cub.ngrok-free.app/api/"
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
@@ -28,14 +28,14 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface HewanApiService {
-    @GET("hewan.php")
-    suspend fun getHewan(
+    @GET("reviews")
+    suspend fun getReviewFilm(
         @Header("Authorization") userId: String
-    ): List<Hewan>
+    ): List<ReviewFilm>
 
 
     @Multipart
-    @POST("hewan.php")
+    @POST("reviews")
     suspend fun postHewan(
         @Header("Authorization") userId: String,
         @Part("nama") nama: RequestBody,
@@ -56,7 +56,7 @@ object HewanApi {
     }
 
     fun getHewanUrl(imageId: String): String {
-        return "${BASE_URL}image.php?id=$imageId"
+        return "https://hip-keen-cub.ngrok-free.app/storage/$imageId"
     }
 }
 enum class ApiStatus { LOADING, SUCCESS, FAILED }
