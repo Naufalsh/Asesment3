@@ -163,7 +163,7 @@ fun MainScreen() {
         if (showHewanDialog) {
             HewanDialog(
                 bitmap = bitmap,
-                onDismissRequest = { showHewanDialog = false }) { nama, namaLatin -> viewModel.saveData(user.email, nama, namaLatin, bitmap!!)
+                onDismissRequest = { showHewanDialog = false }) { judul_film, rating, komentar -> viewModel.saveData(user.email, judul_film, rating,komentar, bitmap!!)
                 showHewanDialog = false
                 }
         }

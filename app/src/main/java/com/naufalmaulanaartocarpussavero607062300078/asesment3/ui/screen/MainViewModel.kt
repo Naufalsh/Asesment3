@@ -38,29 +38,34 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun saveData(userId: String, nama: String, namaLatin: String, bitmap: Bitmap) {
+    fun saveData(userId: String, judul_film: String, rating: String, komentar: String ,bitmap: Bitmap) {
+        Log.d("DEBUG", "saveData: UserId= $userId, judul_film= $judul_film, rating= $rating, komentar= $komentar")
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val result = HewanApi.service.postHewan(
+                val result = HewanApi.service.postReviewFilm(
                     userId,
-                    nama.toRequestBody("text/plain".toMediaTypeOrNull()),
-                    namaLatin.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    judul_film.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    rating.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    komentar.toRequestBody("text/plain".toMediaTypeOrNull()),
                     bitmap.toMultiPartBody()
                 )
+                Log.d("tambah", "$result")
                 if (result.status == "success")
                     retrieveData(userId)
+
                 else
                     throw Exception(result.message)
             } catch (e: Exception) {
                 Log.d("MainViewModel", "Failure: ${e.message}")
                 errorMessage.value = "Error: ${e.message}"
+
             }
         }
 
     }
 
     fun deleteData(userId: String, hewanId: String) {
-        Log.d("DEBUG", "delete Data: UserId= $userId, hewanId= $hewanId")
+        Log.d("Delete", "delete Data: UserId= $userId, hewanId= $hewanId")
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val result = HewanApi.service.deleteHewan(
@@ -87,7 +92,7 @@ class MainViewModel : ViewModel() {
         val requestBody = byteArray.toRequestBody(
             "image/jpg".toMediaTypeOrNull(), 0, byteArray.size)
         return MultipartBody.Part.createFormData(
-            "image", "image.jpg", requestBody)
+            "poster", "image.jpg", requestBody)
     }
 
     fun clearMessage() { errorMessage.value = null }

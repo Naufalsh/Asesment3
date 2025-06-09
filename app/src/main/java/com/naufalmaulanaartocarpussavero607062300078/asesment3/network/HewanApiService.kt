@@ -14,6 +14,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 private const val BASE_URL = "https://hip-keen-cub.ngrok-free.app/api/"
@@ -35,18 +36,19 @@ interface HewanApiService {
 
 
     @Multipart
-    @POST("reviews")
-    suspend fun postHewan(
+    @POST("reviews/store")
+    suspend fun postReviewFilm(
         @Header("Authorization") userId: String,
-        @Part("nama") nama: RequestBody,
-        @Part("namaLatin") namaLatin: RequestBody,
-        @Part image: MultipartBody.Part
+        @Part("judul_film") judul_film: RequestBody,
+        @Part("rating") rating: RequestBody,
+        @Part("komentar") komentar: RequestBody,
+        @Part poster: MultipartBody.Part
         ): OpStatus
 
-    @DELETE("hewan.php")
+    @DELETE("reviews/delete/{id}")
     suspend fun deleteHewan(
         @Header("Authorization") userId: String,
-        @Query("id") id: String
+        @Path("id") id: String
     ):OpStatus
 }
 

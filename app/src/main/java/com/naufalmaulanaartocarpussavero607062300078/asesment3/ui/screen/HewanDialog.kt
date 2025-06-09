@@ -36,10 +36,11 @@ import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.theme.Asesment
 fun HewanDialog(
     bitmap: Bitmap?,
     onDismissRequest: () -> Unit,
-    onConfirmation: (String, String) -> Unit
+    onConfirmation: (String, String, String) -> Unit
 ) {
-    var nama by remember { mutableStateOf("") }
-    var namaLatin by remember { mutableStateOf("") }
+    var judul_film by remember { mutableStateOf("") }
+    var rating by remember { mutableStateOf("") }
+    var komentar by remember { mutableStateOf("") }
 
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card (
@@ -56,8 +57,8 @@ fun HewanDialog(
                     modifier = Modifier.fillMaxWidth().aspectRatio(1f)
                 )
                 OutlinedTextField(
-                    value = nama,
-                    onValueChange = { nama = it },
+                    value = judul_film,
+                    onValueChange = { judul_film = it },
                     label = { Text(text = stringResource(id = R.string.nama)) },
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(
@@ -67,8 +68,19 @@ fun HewanDialog(
                     modifier = Modifier.padding(top = 8.dp)
                 )
                 OutlinedTextField(
-                    value = namaLatin,
-                    onValueChange = { namaLatin = it },
+                    value = rating,
+                    onValueChange = { rating = it },
+                    label = { Text(text = stringResource(id = R.string.nama_latin)) },
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Done
+                    ),
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+                OutlinedTextField(
+                    value = komentar,
+                    onValueChange = { komentar = it },
                     label = { Text(text = stringResource(id = R.string.nama_latin)) },
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(
@@ -88,7 +100,7 @@ fun HewanDialog(
                         Text(text = stringResource(id = R.string.batal))
                     }
                     OutlinedButton(
-                        onClick = { onConfirmation(nama, namaLatin) },
+                        onClick = { onConfirmation(judul_film, rating, komentar) },
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text(text = stringResource(R.string.simpan))
@@ -107,7 +119,7 @@ fun AddDialogPreview() {
         HewanDialog(
             bitmap = null,
             onDismissRequest = {},
-            onConfirmation = { _, _ -> }
+            onConfirmation = { _, _, _ -> }
         )
     }
 }
