@@ -100,7 +100,7 @@ fun ProfilDialog(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun DialogPreview() {
-    Modul02Theme {
+    Asesment3Theme {
         ProfilDialog(
             user = User("naufalmlns","naufalmlns@gmail.com",""),
             onDismissRequest = { },

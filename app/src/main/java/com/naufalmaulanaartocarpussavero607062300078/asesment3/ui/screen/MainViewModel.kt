@@ -6,8 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.Hewan
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.network.ApiStatus
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.network.HewanApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
