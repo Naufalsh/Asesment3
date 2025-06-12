@@ -1,4 +1,4 @@
-package com.naufalmaulanaartocarpussavero607062300078.asesment3
+package com.naufalmaulanaartocarpussavero607062300078.asesment3.network
 
 import android.content.Context
 import androidx.datastore.core.DataStore

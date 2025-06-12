@@ -1,4 +1,4 @@
-package com.naufalmaulanaartocarpussavero607062300078.asesment3
+package com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.screen
 
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.R
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.theme.Asesment3Theme
 
 @Composable
@@ -58,7 +59,7 @@ fun FilmDialog(
                 OutlinedTextField(
                     value = judul_film,
                     onValueChange = { judul_film = it },
-                    label = { Text(text = stringResource(id = R.string.nama)) },
+                    label = { Text(text = stringResource(id = R.string.judul_film)) },
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Words,
@@ -69,7 +70,7 @@ fun FilmDialog(
                 OutlinedTextField(
                     value = rating,
                     onValueChange = { rating = it },
-                    label = { Text(text = stringResource(id = R.string.nama_latin)) },
+                    label = { Text(text = stringResource(id = R.string.rating_film)) },
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences,
@@ -80,7 +81,7 @@ fun FilmDialog(
                 OutlinedTextField(
                     value = komentar,
                     onValueChange = { komentar = it },
-                    label = { Text(text = stringResource(id = R.string.nama_latin)) },
+                    label = { Text(text = stringResource(id = R.string.komentar_film)) },
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences,

@@ -1,4 +1,4 @@
-package com.naufalmaulanaartocarpussavero607062300078.asesment3
+package com.naufalmaulanaartocarpussavero607062300078.asesment3.network
 
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.ReviewFilm
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.OpStatus
@@ -46,6 +46,17 @@ interface FilmApiService {
         @Part("komentar") komentar: RequestBody,
         @Part poster: MultipartBody.Part
         ): OpStatus
+
+    @Multipart
+    @POST("reviews/edit/{id}")
+    suspend fun updateReviewFilm(
+        @Header("Authorization") userId: String,
+        @Part("judul_film") judul_film: RequestBody,
+        @Part("rating") rating: RequestBody,
+        @Part("komentar") komentar: RequestBody,
+        @Part poster: MultipartBody.Part,
+        @Path("id") id: String
+    ): OpStatus
 
     @DELETE("reviews/delete/{id}")
     suspend fun deleteFilm(

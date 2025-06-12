@@ -1,9 +1,10 @@
-package com.naufalmaulanaartocarpussavero607062300078.asesment3
+package com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.screen
 
 import android.content.ContentResolver
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.os.Build
 import android.provider.MediaStore
@@ -11,7 +12,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -77,6 +77,7 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.ClearCredentialException
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.datastore.core.IOException
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -90,16 +91,23 @@ import com.canhub.cropper.CropImageView
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.BuildConfig
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.R
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.ReviewFilm
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.User
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.navigation.Screen
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.network.ApiStatus
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.network.FilmApi
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.network.UserDataStore
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.component.BottomNavItem
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.screen.BottomNavigationBar
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.screen.EditFilmDialog
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.theme.Asesment3Theme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -330,7 +338,7 @@ fun BottomNavigationBarMine(navController: NavHostController) {
         ),
         BottomNavItem.DrawableIconItem(
             navName = "Film Saya",
-            navRoute = Screen.myFilm.route,
+            navRoute = Screen.MyFilm.route,
             iconResId = R.drawable.loading_img
         )
     )
@@ -375,8 +383,11 @@ fun ListItemMine(reviewFilm: ReviewFilm, userId: String, onDelete: (String) -> U
     var showDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
 
+    val viewModel: MainViewModel = viewModel()
     val komentarText = reviewFilm.komentar
     val showReadMore = komentarText.length > 120
+
+    val bitmap = rememberBitmapFromUrl(FilmApi.getFilmUrl(reviewFilm.poster_path))
 
     Card(
         modifier = Modifier
@@ -501,18 +512,39 @@ fun ListItemMine(reviewFilm: ReviewFilm, userId: String, onDelete: (String) -> U
 
     if (showEditDialog) {
         EditFilmDialog(
-            bitmap = null,
+            bitmap = bitmap,
             currentJudul = reviewFilm.judul_film,
             currentRating = reviewFilm.rating.toString(),
             currentKomentar = reviewFilm.komentar,
             onDismissRequest = { showEditDialog = false },
-            onConfirmation = { newJudul, newRating, newKomentar ->
-                // TODO: Buat fungsi update dan panggil di sini
-                // Misalnya: onEdit(reviewFilm.id, newJudul, newRating, newKomentar)
+            onConfirmation = { judul_film, rating, komentar, newBitmap -> // Added newBitmap parameter
+                // Call your update function, passing the newBitmap
+                viewModel.updateData(userId, judul_film, rating, komentar, newBitmap, reviewFilm.id)
                 showEditDialog = false
             }
         )
     }
+}
+
+@Composable
+fun rememberBitmapFromUrl(url: String): Bitmap? {
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+    LaunchedEffect(url) {
+        withContext(Dispatchers.IO) {
+            try {
+                val connection = URL(url).openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                val input: InputStream = connection.inputStream
+                bitmap = BitmapFactory.decodeStream(input)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    return bitmap
 }
 
 

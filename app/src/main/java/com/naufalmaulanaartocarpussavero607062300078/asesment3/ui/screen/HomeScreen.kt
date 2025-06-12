@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -69,17 +68,14 @@ import coil.request.ImageRequest
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.ApiStatus
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.BuildConfig
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.FilmApi
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.MainScreen
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.MainViewModel
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.ProfilDialog
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.R
-import com.naufalmaulanaartocarpussavero607062300078.asesment3.UserDataStore
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.ReviewFilm
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.User
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.navigation.Screen
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.network.ApiStatus
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.network.FilmApi
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.network.UserDataStore
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.component.BottomNavItem
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.theme.Asesment3Theme
 import kotlinx.coroutines.CoroutineScope
@@ -131,7 +127,7 @@ fun HomeScreen(navController: NavHostController) {
             BottomNavigationBar(navController)
         }
     ) { innerPadding ->
-        ScreenContent(viewModel,user.email, Modifier.padding(innerPadding))
+        ScreenContentHomeScreen(viewModel,user.email, Modifier.padding(innerPadding))
 
         if (showDialog) {
             ProfilDialog(
@@ -145,7 +141,7 @@ fun HomeScreen(navController: NavHostController) {
 }
 
 @Composable
-fun ScreenContent(viewModel: MainViewModel, userId: String ,modifier: Modifier = Modifier) {
+fun ScreenContentHomeScreen(viewModel: MainViewModel, userId: String ,modifier: Modifier = Modifier) {
     val data by viewModel.data
     val status by viewModel.status.collectAsState()
 
@@ -204,7 +200,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         ),
         BottomNavItem.DrawableIconItem(
             navName = "Film Saya",
-            navRoute = Screen.myFilm.route,
+            navRoute = Screen.MyFilm.route,
             iconResId = R.drawable.loading_img
         )
     )

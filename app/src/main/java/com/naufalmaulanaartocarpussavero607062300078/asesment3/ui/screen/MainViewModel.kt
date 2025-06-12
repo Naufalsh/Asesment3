@@ -1,4 +1,4 @@
-package com.naufalmaulanaartocarpussavero607062300078.asesment3
+package com.naufalmaulanaartocarpussavero607062300078.asesment3.ui.screen
 
 import android.graphics.Bitmap
 import android.util.Log
@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naufalmaulanaartocarpussavero607062300078.asesment3.model.ReviewFilm
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.network.ApiStatus
+import com.naufalmaulanaartocarpussavero607062300078.asesment3.network.FilmApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -79,6 +81,36 @@ class MainViewModel : ViewModel() {
 
     }
 
+    fun updateData(userId: String, judul_film: String, rating: String, komentar: String, bitmap: Bitmap?, id: String) {
+        Log.d("DEBUG", "saveData: UserId= $userId, judul_film= $judul_film, rating= $rating, komentar= $komentar")
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val result = bitmap?.let {
+                    FilmApi.service.updateReviewFilm(
+                        userId,
+                        judul_film.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        rating.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        komentar.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        it.toMultiPartBody(),
+                        id
+                    )
+                }
+                Log.d("edit", "$result")
+                if (result != null) {
+                    if (result.status == "success")
+                        retrieveData(userId)
+                    else
+                        throw Exception(result.message)
+                }
+            } catch (e: Exception) {
+                Log.d("MainViewModel", "Failure: ${e.message}")
+                errorMessage.value = "Error: ${e.message}"
+
+            }
+        }
+
+    }
+
     fun deleteData(userId: String, filmId: String) {
         Log.d("Delete", "delete Data: UserId= $userId, filmId= $filmId")
         viewModelScope.launch(Dispatchers.IO) {
@@ -99,6 +131,8 @@ class MainViewModel : ViewModel() {
             }
         }
     }
+
+
 
     private fun Bitmap.toMultiPartBody(): MultipartBody.Part {
         val stream = ByteArrayOutputStream()
