@@ -524,11 +524,10 @@ fun ListItemMine(reviewFilm: ReviewFilm, userId: String, onDelete: (String) -> U
         EditFilmDialog(
             bitmap = bitmap,
             currentJudul = reviewFilm.judul_film,
-            currentRating = reviewFilm.rating.toString(),
+            currentRating = reviewFilm.rating,
             currentKomentar = reviewFilm.komentar,
             onDismissRequest = { showEditDialog = false },
-            onConfirmation = { judul_film, rating, komentar, newBitmap -> // Added newBitmap parameter
-                // Call your update function, passing the newBitmap
+            onConfirmation = { judul_film, rating, komentar, newBitmap ->
                 viewModel.updateData(userId, judul_film, rating, komentar, newBitmap, reviewFilm.id)
                 showEditDialog = false
             }
