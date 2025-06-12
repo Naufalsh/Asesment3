@@ -128,8 +128,6 @@ fun MainScreen(navController: NavHostController) {
         if (bitmap != null) showFilmDialog = true
     }
 
-    var filmToEdit by remember { mutableStateOf<ReviewFilm?>(null) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -165,24 +163,37 @@ fun MainScreen(navController: NavHostController) {
             BottomNavigationBarMine(navController)
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                val options = CropImageContractOptions(
-                    null, CropImageOptions(
-                        imageSourceIncludeGallery = true,
-                        imageSourceIncludeCamera = true,
-                        fixAspectRatio = true
+            if (user.email.isNotEmpty()) {
+                FloatingActionButton(onClick = {
+                    val options = CropImageContractOptions(
+                        null, CropImageOptions(
+                            imageSourceIncludeGallery = true,
+                            imageSourceIncludeCamera = true,
+                            fixAspectRatio = true
+                        )
                     )
-                )
-                launcher.launch(options)
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.tambah_hewan)
-                )
+                    launcher.launch(options)
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.tambah_hewan)
+                    )
+                }
             }
         }
     ) { innerPadding ->
-        ScreenContent(viewModel,user.email, Modifier.padding(innerPadding))
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
+            if (user.email.isEmpty()) {
+                Text("Silakan login terlebih dahulu", style = MaterialTheme.typography.titleMedium)
+            } else {
+                ScreenContent(viewModel, user.email, Modifier.fillMaxSize())
+            }
+        }
 
         if (showDialog) {
             ProfilDialog(
@@ -377,7 +388,6 @@ fun BottomNavigationBarMine(navController: NavHostController) {
 
 @Composable
 fun ListItemMine(reviewFilm: ReviewFilm, userId: String, onDelete: (String) -> Unit) {
-
 
     var expanded by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
