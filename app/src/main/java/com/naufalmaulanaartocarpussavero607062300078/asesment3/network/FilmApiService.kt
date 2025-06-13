@@ -16,7 +16,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 
-private const val BASE_URL = "https://hip-keen-cub.ngrok-free.app/api/"
+private const val BASE_URL = "https://api-myfilm-production.up.railway.app/api/"
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
@@ -71,7 +71,7 @@ object FilmApi {
     }
 
     fun getFilmUrl(imageId: String): String {
-        return "https://hip-keen-cub.ngrok-free.app/storage/$imageId"
+        return "https://api-myfilm-production.up.railway.app/storage/$imageId"
     }
 }
 enum class ApiStatus { LOADING, SUCCESS, FAILED }

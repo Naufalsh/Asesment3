@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -73,21 +75,26 @@ fun FilmDialog(
                     label = { Text(text = stringResource(id = R.string.rating_film)) },
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences,
-                        imeAction = ImeAction.Done
+                        keyboardType = KeyboardType.Number, // hanya angka
+                        imeAction = ImeAction.Next
                     ),
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier
+                        .padding(top = 8.dp)
                 )
+
                 OutlinedTextField(
                     value = komentar,
                     onValueChange = { komentar = it },
                     label = { Text(text = stringResource(id = R.string.komentar_film)) },
-                    maxLines = 1,
+                    maxLines = 5, // lebih dari 1 baris
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences,
                         imeAction = ImeAction.Done
                     ),
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth()
+                        .heightIn(min = 100.dp) // memberi ruang komentar lebih luas
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp),

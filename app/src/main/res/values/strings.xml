@@ -12,7 +12,7 @@
     <string name="simpan">Simpan</string>
     <string name="batal">Batal</string>
     <string name="judul_film">Judul Film</string>
-    <string name="rating_film">Rating Film</string>
+    <string name="rating_film">Rating Film 1 - 5</string>
     <string name="komentar_film">Komentar Film</string>
     <string name="tambah_film">Tambah Film</string>
 </resources>
