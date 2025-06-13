@@ -43,6 +43,7 @@ fun FilmDialog(
     var judul_film by remember { mutableStateOf("") }
     var rating by remember { mutableStateOf("") }
     var komentar by remember { mutableStateOf("") }
+    val isFormValid = judul_film.isNotBlank() && rating.isNotBlank() && komentar.isNotBlank()
 
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card (
@@ -108,6 +109,7 @@ fun FilmDialog(
                     }
                     OutlinedButton(
                         onClick = { onConfirmation(judul_film, rating, komentar) },
+                        enabled = isFormValid,
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text(text = stringResource(R.string.simpan))

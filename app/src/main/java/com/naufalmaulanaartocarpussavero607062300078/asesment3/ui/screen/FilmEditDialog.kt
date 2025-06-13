@@ -61,24 +61,25 @@ fun EditFilmDialog(
     currentRating: String,
     currentKomentar: String,
     onDismissRequest: () -> Unit,
-    onConfirmation: (String, String, String, Bitmap?) -> Unit // Modified to pass Bitmap?
+    onConfirmation: (String, String, String, Bitmap?) -> Unit
 ) {
     var judul_film by remember { mutableStateOf(currentJudul) }
     var rating by remember { mutableStateOf(currentRating) }
     var komentar by remember { mutableStateOf(currentKomentar) }
+    val isFormValid = judul_film.isNotBlank() && rating.isNotBlank() && komentar.isNotBlank()
 
     val context = LocalContext.current
-    // Use the initial bitmap passed in as the default, but allow it to be updated by the launcher
+
     var displayBitmap: Bitmap? by remember { mutableStateOf(bitmap) }
 
     val launcher = rememberLauncherForActivityResult(CropImageContract()) {
         val croppedBitmap = getCroppedImage(context.contentResolver, it)
         if (croppedBitmap != null) {
-            displayBitmap = croppedBitmap // Update the displayed bitmap
+            displayBitmap = croppedBitmap
         }
     }
 
-    Log.e("bitmapEdit", "$displayBitmap") // Log the currently displayed bitmap
+    Log.e("bitmapEdit", "$displayBitmap")
 
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card(
@@ -177,9 +178,9 @@ fun EditFilmDialog(
                     }
                     OutlinedButton(
                         onClick = {
-                            // Pass the updated displayBitmap to the onConfirmation lambda
                             onConfirmation(judul_film, rating, komentar, displayBitmap)
                         },
+                        enabled = isFormValid,
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text(text = stringResource(R.string.simpan))
@@ -220,7 +221,7 @@ fun FilmEditDialogPreview() {
             currentRating = "4.5",
             currentKomentar = "Film ini sangat bagus dan menghibur!",
             onDismissRequest = {},
-            onConfirmation = { _, _, _, _ -> } // Adjusted preview to match new signature
+            onConfirmation = { _, _, _, _ -> }
         )
     }
 }
