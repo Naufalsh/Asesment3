@@ -196,12 +196,12 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItem.DrawableIconItem(
             navName = "List Film",
             navRoute = Screen.Home.route,
-            iconResId = R.drawable.loading_img
+            iconResId = R.drawable.baseline_movie_24
         ),
         BottomNavItem.DrawableIconItem(
             navName = "Film Saya",
             navRoute = Screen.MyFilm.route,
-            iconResId = R.drawable.loading_img
+            iconResId = R.drawable.outline_local_movies_24
         )
     )
 
@@ -226,10 +226,11 @@ fun BottomNavigationBar(navController: NavHostController) {
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.secondary,
-                    selectedTextColor = MaterialTheme.colorScheme.secondary,
+                    selectedIconColor = Color(0xFF89DCEB),
+                    selectedTextColor = Color(0xFF89DCEB),
                     unselectedIconColor = MaterialTheme.colorScheme.primary,
-                    unselectedTextColor = MaterialTheme.colorScheme.primary
+                    unselectedTextColor = MaterialTheme.colorScheme.primary,
+                    indicatorColor = Color(0xFF1E1E2E).copy(alpha = 0.2f)
                 )
             )
         }
